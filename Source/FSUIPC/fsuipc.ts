@@ -2,11 +2,10 @@ import { v4 as uuid } from 'uuid';
 import { Logging } from '../Utility/Logging';
 import { FSUIPCResponse as Response } from './Models/Response/FSUIPCResponse'
 import { FSUIPCRequest as Request } from './Models/Request/FSUIPCRequest'
-import { Commands } from './Models/Request/Commands'
 
 type ResponseHandler<TResponse extends Response> = (r: TResponse) => void;
 
-class FSUIPC
+export class FSUIPC
 {
     constructor() {}
 
@@ -81,6 +80,18 @@ class FSUIPC
       this.ws?.send(json)
     }
 
+    async SendRequestAndWait(request: Request): Promise<Response> {
+      return new Promise((resolve, reject) => {
+
+        setTimeout(() => {
+          reject(new Error('Request timed out'));
+        }, 5000);
+
+        this.SendRequest(request, (r: Response) => {
+            resolve(r);
+        });
+      });
+    }
 
     private AssertConnected() 
     {
@@ -90,22 +101,3 @@ class FSUIPC
       }
     }
 }
-
-const fsuipc: FSUIPC = new FSUIPC();
-fsuipc.Connect();
-
-async function main(): Promise<void> {
-
-  const delay = (ms: number): Promise<void> => new Promise(res => setTimeout(res, ms));
-  await delay(5000);
-
-  let r: Request = new Request(Commands.AboutRead);
-
-  fsuipc.SendRequest(r, (r: Response) => {
-    Logging.Log("Yeet yote")
-    console.log(r)
-  });
-
-}
-
-main();
