@@ -9,6 +9,6 @@ export class VariableGroup
     constructor
     (
         public name: string,
-        public ...variables: SimVariable[] = []
+        public variables: SimVariable[] = []
     ){}
 }

@@ -1,2 +1,2 @@
 tsc
-node .\out\fsuipc\fsuipc.js
+node .\out\TestMain.js

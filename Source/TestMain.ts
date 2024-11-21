@@ -45,8 +45,10 @@ async function main(): Promise<void> {
   // Variable group : Option 2 - DIY
   let hydPanel: VariableGroup = new VariableGroup(
    "HYD Panel",
-   new SimVariable("a32nx_pump_or_something"),
-   new SimVariable("a32nx_pump_2", "0x1234")
+   [
+    new SimVariable("a32nx_pump_or_something"),
+    new SimVariable("a32nx_pump_2", "0x1234")
+   ]
   )
 
   variableManger.AddVariableGroup(hydPanel);
