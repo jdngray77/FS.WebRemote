@@ -10,7 +10,7 @@ export class Logging {
         console.log(this.index(s));
     }
 
-    static LogError(s: string | null, e: unknown) 
+    static LogError(s: string | null, e: unknown | null = null)
     {
         console.error(this.index(s), e);
     }
@@ -32,7 +32,7 @@ export class Logging {
     {
         if (this.enableWebServiceLogging) 
         {
-            console.log(this.index("[ vvv RESPONSE VVV ]" + e));
+            console.log(this.index("[ vvv RESPONSE VVV ] \n" + e));
         }
     }
 
@@ -40,7 +40,7 @@ export class Logging {
     {
         if (this.enableWebServiceLogging) 
         {
-            console.log(this.index("[ ^^^ REQUEST ^^^ ]" + e));
+            console.log(this.index("[ ^^^ REQUEST ^^^ ] \n" + e));
         }
     }
 

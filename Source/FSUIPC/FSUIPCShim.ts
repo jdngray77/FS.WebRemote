@@ -9,9 +9,18 @@ import {FSUIPCVarsRequest} from "./Models/Request/FSUIPCVarsRequest";
 import {VariableGroup} from "./Variables/VariableGroup";
 import {SimVariable} from "./Variables/SimVariable";
 import {FSUIPCIntervalRequest} from "./Models/Request/FSUIPCIntervalRequest";
+import {UtilFunctions} from "../Utility/UtiFunctions";
 
 export class FSUIPCShim implements IFSUIPC
 {
+	constructor() {
+		Logging.LogWarning(`=================================
+		SHIM ACTIVE  -- NOT USING REAL DATA.
+		=================================`);
+
+		UtilFunctions.Sleep(5000);
+	}
+
 	private connected: boolean = false;
 	private handlers: Map<string, ResponseHandler<any>> = new Map()
 	private dynamicHandlers: Map<string, DynamicResponseHandler> = new Map()
@@ -26,11 +35,14 @@ export class FSUIPCShim implements IFSUIPC
 		}
 	}
 
-	Connect(): void
+	ConnectAsync(): Promise<any>
 	{
-		Logging.Log("uwu");
-		Logging.Log("WebSocket Open");
-		this.connected = true;
+		return new Promise((resolve, reject) => {
+			Logging.Log("uwu");
+			Logging.Log("WebSocket Open");
+			this.connected = true;
+			resolve(undefined);
+		})
 	}
 
 	ForgetDynamicHandler(handler: DynamicResponseHandler): void {

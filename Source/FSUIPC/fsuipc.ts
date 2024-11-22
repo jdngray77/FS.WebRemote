@@ -18,38 +18,55 @@ export class FSUIPC implements IFSUIPC {
 		return this.connected;
 	}
 
-	Connect() {
-		const self = this;
-		Logging.Log("uwu");
-		this.ws = new WebSocket('ws://192.168.0.13:2048/fsuipc/', "fsuipc");
+	ConnectAsync(address: string = 'ws://192.168.0.13:2048/fsuipc/'): Promise<any> {
+		return new Promise((resolve, reject) => {
+			Logging.Log("uwu");
 
-		this.ws.onopen = function (e: Event) {
-			Logging.Log("WebSocket Open");
-			//Logging.LogWebSocketEvent(e);
-		};
+			const self = this;
+			const _resolve = resolve;
+			const _reject = reject;
 
-		this.ws.onclose = function (e: Event) {
-			Logging.Log("WebSocket Closed");
-			//Logging.LogWebSocketEvent(e);
-		};
+			const timeoutId = setTimeout(() => {
+				self.ws?.close();
+				self.ws = null;
+				reject(new Error("Did not connect to the web socket in a reasonable time."));
+			}, 5000);
 
-		this.ws.onerror = function (e: Event) {
-			Logging.Log("WebSocket Error");
-			//Logging.LogWebSocketEvent(e);
-			self.ws = null;
-		}
+			this.ws = new WebSocket(address, "fsuipc");
 
-		this.ws.onmessage = function (msg: MessageEvent) {
-			Logging.LogWebResponse(msg.data)
+			this.ws.onopen = function (e: Event) {
+				Logging.Log("WebSocket Open");
+				try
+				{
+					_resolve(undefined);
+				} catch (e) {}
+			};
 
-			let fsuipcResponse: Response = JSON.parse(msg.data) as Response;
+			this.ws.onclose = function (e: Event) {
+				Logging.Log("WebSocket Closed");
+			};
 
-			try {
-				self.HandleResponse(fsuipcResponse);
-			} catch (e) {
-				Logging.LogError("Failed handling FSUIPC response", e);
+			this.ws.onerror = function (e: Event) {
+				Logging.Log("WebSocket Error");
+				try
+				{
+					_reject("Failed to connect.");
+				} catch (e) {}
+				self.ws = null;
 			}
-		}
+
+			this.ws.onmessage = function (msg: MessageEvent) {
+				Logging.LogWebResponse(msg.data)
+
+				let fsuipcResponse: Response = JSON.parse(msg.data) as Response;
+
+				try {
+					self.HandleResponse(fsuipcResponse);
+				} catch (e) {
+					Logging.LogError("Failed handling FSUIPC response", e);
+				}
+			}
+		});
 	}
 
 	ForgetDynamicHandlerByName(name: string) {

@@ -5,7 +5,7 @@ import {FSUIPCResponse as Response} from "./Models/Response/FSUIPCResponse";
 export interface IFSUIPC {
 	IsConnected(): Boolean;
 
-	Connect(): void;
+	ConnectAsync(): Promise<any>;
 
 	ForgetDynamicHandlerByName(name: string): void;
 

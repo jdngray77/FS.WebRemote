@@ -13,12 +13,17 @@ import {IFSUIPC} from "./FSUIPC/IFSUIPC";
 
 async function main(): Promise<void> {
 
-  const fsuipc: IFSUIPC = new FSUIPCShim();
-  fsuipc.Connect();
+  const fsuipc: IFSUIPC = new FSUIPC();
+  // OR
+  //const fsuipc: IFSUIPC = new FSUIPCShim();
 
-  // temp delay for async connection, give it time to connect.
-  const delay = (ms: number): Promise<void> => new Promise(res => setTimeout(res, ms));
-  await delay(2000);
+  try {
+    await fsuipc.ConnectAsync();
+  } catch (e)
+  {
+    Logging.LogError("oops, couldn't connect!")
+    return;
+  }
 
   // Read & print server info
   fsuipc.SendRequest(
