@@ -1,5 +1,5 @@
 import {DynamicResponseHandler, ResponseHandler} from "./DynamicResponseHandler";
-import {FSUIPCRequest, FSUIPCRequest as Request} from "./Models/Request/FSUIPCRequest";
+import {FSUIPCRequest as Request} from "./Models/Request/FSUIPCRequest";
 import {FSUIPCResponse as Response} from "./Models/Response/FSUIPCResponse";
 
 export interface IFSUIPC {

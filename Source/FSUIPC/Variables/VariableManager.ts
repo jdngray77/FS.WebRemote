@@ -1,4 +1,3 @@
-import { Logging } from "../../Utility/Logging";
 import { FSUIPC } from "../fsuipc";
 import { Commands } from "../Models/Request/Commands";
 import { FSUIPCVarDefinition } from "../Models/Request/FSUIPCVarDefinition";
@@ -10,8 +9,13 @@ import {FSUIPCRequest} from "../Models/Request/FSUIPCRequest";
 import {FSUIPCIntervalRequest} from "../Models/Request/FSUIPCIntervalRequest";
 import {DynamicResponseHandler} from "../DynamicResponseHandler";
 import {IFSUIPC} from "../IFSUIPC";
+import {FSUIPCVarsResponse} from "../Models/Response/FSUIPCVarsResponse";
+import {Updatable} from "../../Utility/Updatable";
+import {Logging} from "../../Utility/Logging";
 
 // TODO offsets
+// TODO set value
+// TODO updates
 
 /**
  *  Manages reading and writing of variables via {@link FSUIPC}
@@ -23,23 +27,37 @@ import {IFSUIPC} from "../IFSUIPC";
  *  @extends IDisposable Should be disposed when no longer required to
  *                       stop variable updates and delete variable groups.
  */
-export class VariableManager implements IDisposable
+export class VariableManager extends Updatable<FSUIPCVarsResponse> implements IDisposable
 {
     public readonly DefaultUpdateInterval: number = 2000;
 
     private variableGroups: VariableGroup[] = []
+    private responseHandler: VariableManagerDynamicResponseHandler;
 
-    private responseHandler: DynamicResponseHandler = new VariableManagerDynamicResponseHandler();
-
-    OnUpdate(x: (a: any) => void) 
+    override Update(update: FSUIPCVarsResponse)
     {
-        // TODO
+        let groupToUpdate = this.GetGroup(update.name!);
+
+        if (groupToUpdate == null)
+        {
+            Logging.LogWarning(`Received update for ${update.name}, but that group is not known to this variable manager.`)
+            return;
+        }
+
+        groupToUpdate.Update(update)
+        super.Update(update);
     }
 
     constructor
     (   
         private ws: IFSUIPC
-    ){}
+    )
+    {
+        super();
+
+        this.responseHandler = new VariableManagerDynamicResponseHandler()
+        this.responseHandler.OnVarRead = (it) => this.Update(it);
+    }
 
     Dispose(): void {
         // TODO unhook when listening to updates
@@ -195,16 +213,23 @@ export class VariableManager implements IDisposable
  */
 class VariableManagerDynamicResponseHandler extends DynamicResponseHandler
 {
+    OnVarRead: ((response: FSUIPCVarsResponse) => any) | null = null;
+
     constructor()
     {
         super();
 
-        super.On(Commands.VarsRead, this.HandleVarsRead)
+        super.On(Commands.VarsDeclare, this.HandleVarsDeclare.bind(this))
+        super.On(Commands.VarsRead, this.HandleVarsRead.bind(this))
     }
 
-    // TODO response model
-    HandleVarsRead(response: FSUIPCResponse)
+    private HandleVarsRead(response: FSUIPCVarsResponse)
     {
+        this.OnVarRead?.(response);
+    }
 
+    private HandleVarsDeclare(response: FSUIPCResponse)
+    {
+        FSUIPCResponse.AssertSuccess(response, "Failed to create variable group.")
     }
 }

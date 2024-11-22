@@ -38,6 +38,7 @@ export class FSUIPC implements IFSUIPC {
 				Logging.Log("WebSocket Open");
 				try
 				{
+					clearTimeout(timeoutId)
 					_resolve(undefined);
 				} catch (e) {}
 			};

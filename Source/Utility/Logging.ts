@@ -1,5 +1,5 @@
 export class Logging {
-    static readonly enableWebServiceLogging: Boolean = true;
+    static readonly enableWebServiceLogging: Boolean = false;
 
     private static i: number = 0;
 

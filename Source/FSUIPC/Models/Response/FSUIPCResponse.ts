@@ -1,4 +1,4 @@
-export class FSUIPCResponse 
+export class FSUIPCResponse
 {
     public command: string | null = null;
     public name: string | null = null;
@@ -6,11 +6,13 @@ export class FSUIPCResponse
     public errorMessage: string | null = null;
     public errorCode: string | null = null;
 
-    public AssertSuccess(reason: string = 'Response not successful')
+    static AssertSuccess(
+        response: FSUIPCResponse,
+        reason: string = 'Response not successful')
     {
-        if (this.success == null || !this.success)
+        if (response.success == null || !response.success)
         {
-            throw new Error(reason + " " + this);
+            throw new Error(reason + " " + response);
         }
     }
 }
