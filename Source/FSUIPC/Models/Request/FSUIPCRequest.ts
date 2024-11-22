@@ -2,7 +2,7 @@ export class FSUIPCRequest
 {
     constructor
     (
-        public command: nbl<string> = null,
+        public command: string,
         public name: nbl<string> = null
     ) 
     {}

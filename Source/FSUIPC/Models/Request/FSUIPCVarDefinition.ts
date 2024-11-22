@@ -2,7 +2,7 @@ export class FSUIPCVarDefinition
 {
     constructor
     (
-        public name: nbl<string>,
-        public value: nbl<string> = null,
+        public name: string,
+        public value: number = 0.0,
     ){}
 }

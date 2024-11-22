@@ -6,12 +6,12 @@ export class FSUIPCVarsRequest extends FSUIPCIntervalRequest
 {
     constructor
     (
-        command: nbl<string> = null,
+        command: string,
         name: nbl<string> = null,
-        interval: nbl<string> = '0',
-        public changesOnly: nbl<boolean> = null,
-        public vars: nbl<FSUIPCVarDefinition[]> = null,
-        public allowCreate: nbl<boolean> = null,
+        interval: number = 0,
+        public changesOnly: boolean = true,
+        public vars: FSUIPCVarDefinition[] = [],
+        public allowCreate: boolean = false,
         public code: nbl<string> = null,
         public notify: nbl<string> = null,
     )

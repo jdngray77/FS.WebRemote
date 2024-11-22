@@ -22,7 +22,7 @@ async function main(): Promise<void> {
   fsuipc.SendRequest(
     new Request(Commands.AboutRead),
     (r: Response) => {
-        console.log(r)
+        // console.log(r)
     }
   );
 
@@ -36,22 +36,24 @@ async function main(): Promise<void> {
     })
 
   // Variable group : Option 1 - automatic
-  let elecPanel: VariableGroup = variableManger.CreateVariableGroup(
+  let elecPanel: VariableGroup = await variableManger.CreateVariableGroupAsync(
     "ELEC Panel",
-    new SimVariable("a32nx_Bat_1_Master"),
-    new SimVariable("a32nx_Bat_2_Master", "0x1234")
+    new SimVariable("PRK BRK", "A32NX_PARK_BRAKE_LEVER_POS"),
   );
 
-  // Variable group : Option 2 - DIY
-  let hydPanel: VariableGroup = new VariableGroup(
-   "HYD Panel",
-   [
-    new SimVariable("a32nx_pump_or_something"),
-    new SimVariable("a32nx_pump_2", "0x1234")
-   ]
-  )
+  variableManger.StartVariableGroupPolling(elecPanel);
 
-  variableManger.AddVariableGroup(hydPanel);
+
+  // // Variable group : Option 2 - DIY
+  // let hydPanel: VariableGroup = new VariableGroup(
+  //  "HYD Panel",
+  //  [
+  //   new SimVariable("a32nx_pump_or_something"),
+  //   new SimVariable("a32nx_pump_2", "0x1234")
+  //  ]
+  // )
+
+  //variableManger.AddVariableGroup(hydPanel);
 
   // listen to particular group updates
   elecPanel.OnUpdate(it => 
@@ -59,9 +61,10 @@ async function main(): Promise<void> {
         // Handle updates, could be any variable group.
     })
 
+
   // dispose of when no longer needed. 
   // stops listening for variable updates + unregisters all variables.
-  variableManger.Dispose();
+  //variableManger.Dispose();
 }
 
 main();

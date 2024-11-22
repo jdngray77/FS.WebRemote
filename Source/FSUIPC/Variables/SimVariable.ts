@@ -2,8 +2,9 @@ export class SimVariable
 {
     constructor
     (
-        public Name: nbl<string> = null,
-        public Offset: nbl<string> = null,
+        public FriendlyName: string,        // User friendly name
+        public Name: string,                // Sim variable name
+        public Offset: nbl<string> = null,  // Optional data offset
     ){}
 
     public IsOffset() : Boolean
