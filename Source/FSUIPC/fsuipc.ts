@@ -1,11 +1,11 @@
-import { v4 as uuid } from 'uuid';
-import { Logging } from '../Utility/Logging';
-import { FSUIPCResponse as Response } from './Models/Response/FSUIPCResponse'
+import {v4 as uuid} from 'uuid';
+import {Logging} from '../Utility/Logging';
+import {FSUIPCResponse as Response} from './Models/Response/FSUIPCResponse'
 import {FSUIPCRequest, FSUIPCRequest as Request} from './Models/Request/FSUIPCRequest'
 import {DynamicResponseHandler, ResponseHandler} from "./DynamicResponseHandler";
+import {IFSUIPC} from "./IFSUIPC";
 
-export class FSUIPC
-{
+export class FSUIPC implements IFSUIPC {
 	constructor() {}
 
 	private ws: WebSocket | null = null;
@@ -14,14 +14,11 @@ export class FSUIPC
 	private handlers: Map<string, ResponseHandler<any>> = new Map()
 	private dynamicHandlers: Map<string, DynamicResponseHandler> = new Map()
 
-
-	IsConnected(): Boolean
-	{
+	IsConnected(): Boolean {
 		return this.connected;
 	}
 
-	Connect()
-	{
+	Connect() {
 		const self = this;
 		Logging.Log("uwu");
 		this.ws = new WebSocket('ws://192.168.0.13:2048/fsuipc/', "fsuipc");
@@ -47,25 +44,39 @@ export class FSUIPC
 
 			let fsuipcResponse: Response = JSON.parse(msg.data) as Response;
 
-			try
-			{
+			try {
 				self.HandleResponse(fsuipcResponse);
-			}
-			catch (e)
-			{
+			} catch (e) {
 				Logging.LogError("Failed handling FSUIPC response", e);
 			}
 		}
 	}
 
-	ForgetDynamicHandlerByName(name: string)
-	{
-		throw new Error('Not Implemented');
+	ForgetDynamicHandlerByName(name: string) {
+		if (this.dynamicHandlers.has(name))
+		{
+			this.dynamicHandlers.delete(name)
+		}
 	}
 
 	ForgetDynamicHandler(handler: DynamicResponseHandler)
 	{
-		throw new Error('Not Implemented')
+		let name: nbl<string> = null;
+
+		this.dynamicHandlers.forEach((_handler, _name) => {
+			if (_handler == handler)
+			{
+				name = _name
+				return;
+			}
+		})
+
+		if (name == null)
+		{
+			return
+		}
+
+		this.dynamicHandlers.delete(name);
 	}
 
 	/**
@@ -83,20 +94,16 @@ export class FSUIPC
 	SendNamedRequest(
 		request: Request,
 		responseHandler: nbl<DynamicResponseHandler> = null
-	)
-	{
+	) {
 		this.AssertConnected();
 
-		if (request.name == null)
-		{
+		if (request.name == null) {
 			throw new Error('No name provided in request.')
 		}
 
 		// Handler
-		if (this.dynamicHandlers.get(request.name) == undefined)
-		{
-			if (responseHandler == null)
-			{
+		if (this.dynamicHandlers.get(request.name) == undefined) {
+			if (responseHandler == null) {
 				throw new Error('No handler provided, and none was previously registered.');
 			}
 
@@ -134,8 +141,7 @@ export class FSUIPC
 
 		request.name = id;
 
-		if (responseHandler != null)
-		{
+		if (responseHandler != null) {
 			this.handlers.set(id, responseHandler)
 		}
 
@@ -155,31 +161,25 @@ export class FSUIPC
 		});
 	}
 
-	private AssertConnected()
-	{
-		if (!this.IsConnected)
-		{
+	private AssertConnected() {
+		if (!this.IsConnected) {
 			throw new Error("attempted to talk to FSUIPC whilst not connected to FSUIPC");
 		}
 	}
 
-	private SendRequestCore(request: FSUIPCRequest)
-	{
+	private SendRequestCore(request: FSUIPCRequest) {
 		let json = JSON.stringify(request);
 		Logging.LogWebRequest(json)
 		this.ws?.send(json)
 	}
 
-	private HandleResponse(fsuipcResponse: Response)
-	{
-		if (!fsuipcResponse.success)
-		{
+	private HandleResponse(fsuipcResponse: Response) {
+		if (!fsuipcResponse.success) {
 			Logging.LogError("FSUIPC WSS sent us an error!", fsuipcResponse)
 			return;
 		}
 
-		if (fsuipcResponse.name == null)
-		{
+		if (fsuipcResponse.name == null) {
 			Logging.LogWarning("Got response with no id!");
 			return;
 		}
@@ -189,8 +189,7 @@ export class FSUIPC
 		// UUID Handler
 		let uuidHandler = this.handlers.get(id);
 
-		if (uuidHandler != undefined)
-		{
+		if (uuidHandler != undefined) {
 			uuidHandler!(fsuipcResponse);
 			return;
 		}
@@ -198,8 +197,7 @@ export class FSUIPC
 		// Dynamic Response
 		let dynamicHandler = this.dynamicHandlers.get(id);
 
-		if (dynamicHandler != undefined)
-		{
+		if (dynamicHandler != undefined) {
 			dynamicHandler.Handle(fsuipcResponse);
 			return;
 		}

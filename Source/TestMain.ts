@@ -5,13 +5,15 @@ import { FSUIPCRequest as Request } from './FSUIPC/Models/Request/FSUIPCRequest'
 import { Logging } from "./Utility/Logging";
 import { VariableManager } from "./FSUIPC/Variables/VariableManager";
 import { SimVariable } from "./FSUIPC/Variables/SimVariable";
-import { VariableGroup } from "./FSUIPC/VariableGroup";
+import { VariableGroup } from "./FSUIPC/Variables/VariableGroup";
+import {FSUIPCShim} from "./FSUIPC/FSUIPCShim";
+import {IFSUIPC} from "./FSUIPC/IFSUIPC";
 
 
 
 async function main(): Promise<void> {
 
-  const fsuipc: FSUIPC = new FSUIPC();
+  const fsuipc: IFSUIPC = new FSUIPCShim();
   fsuipc.Connect();
 
   // temp delay for async connection, give it time to connect.
@@ -42,7 +44,6 @@ async function main(): Promise<void> {
   );
 
   variableManger.StartVariableGroupPolling(elecPanel);
-
 
   // // Variable group : Option 2 - DIY
   // let hydPanel: VariableGroup = new VariableGroup(

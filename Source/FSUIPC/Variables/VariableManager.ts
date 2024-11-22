@@ -4,11 +4,12 @@ import { Commands } from "../Models/Request/Commands";
 import { FSUIPCVarDefinition } from "../Models/Request/FSUIPCVarDefinition";
 import { FSUIPCVarsRequest } from "../Models/Request/FSUIPCVarsRequest";
 import { FSUIPCResponse } from "../Models/Response/FSUIPCResponse";
-import { VariableGroup } from "../VariableGroup";
+import { VariableGroup } from "./VariableGroup";
 import { SimVariable } from "./SimVariable";
 import {FSUIPCRequest} from "../Models/Request/FSUIPCRequest";
 import {FSUIPCIntervalRequest} from "../Models/Request/FSUIPCIntervalRequest";
 import {DynamicResponseHandler} from "../DynamicResponseHandler";
+import {IFSUIPC} from "../IFSUIPC";
 
 // TODO offsets
 
@@ -37,7 +38,7 @@ export class VariableManager implements IDisposable
 
     constructor
     (   
-        private ws: FSUIPC
+        private ws: IFSUIPC
     ){}
 
     Dispose(): void {

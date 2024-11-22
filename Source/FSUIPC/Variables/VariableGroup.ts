@@ -1,4 +1,4 @@
-import { SimVariable } from "./Variables/SimVariable";
+import { SimVariable } from "./SimVariable";
 
 export class VariableGroup 
 {
