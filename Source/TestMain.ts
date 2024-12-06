@@ -13,9 +13,9 @@ import {IFSUIPC} from "./FSUIPC/IFSUIPC";
 
 async function main(): Promise<void> {
 
-  //const fsuipc: IFSUIPC = new FSUIPC();
+  const fsuipc: IFSUIPC = new FSUIPC();
   // OR
-  const fsuipc: IFSUIPC = new FSUIPCShim();
+  //const fsuipc: IFSUIPC = new FSUIPCShim();
 
   try {
     await fsuipc.ConnectAsync();
