@@ -1,5 +1,6 @@
 export class Logging {
-    static readonly enableWebServiceLogging: Boolean = false;
+    static readonly enableWebServiceLogging: Boolean = true;
+    static readonly enableTrace: Boolean = true;
 
     private static i: number = 0;
 
@@ -41,6 +42,14 @@ export class Logging {
         if (this.enableWebServiceLogging) 
         {
             console.log(this.index("[ ^^^ REQUEST ^^^ ] \n" + e));
+        }
+    }
+
+    static LogTrace(s: string)
+    {
+        if (this.enableTrace)
+        {
+            console.log("[TRACE] " + s)
         }
     }
 

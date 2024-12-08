@@ -48,6 +48,12 @@ async function main(): Promise<void> {
     new SimVariable("PRK BRK", "A32NX_PARK_BRAKE_LEVER_POS"),
   );
 
+  // listen to particular group updates
+  elecPanel.OnUpdate(it =>
+  {
+    variableManger.StopVariableGroupPolling(elecPanel);
+  })
+
   variableManger.StartVariableGroupPolling(elecPanel);
 
   // // Variable group : Option 2 - DIY
@@ -60,12 +66,6 @@ async function main(): Promise<void> {
   // )
 
   //variableManger.AddVariableGroup(hydPanel);
-
-  // listen to particular group updates
-  elecPanel.OnUpdate(it =>
-    {
-        // Handle updates, could be any variable group.
-    })
 
   // dispose of when no longer needed. 
   // stops listening for variable updates + unregisters all variables.
