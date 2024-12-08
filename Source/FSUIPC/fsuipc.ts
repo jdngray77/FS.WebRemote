@@ -4,6 +4,7 @@ import {FSUIPCResponse as Response} from './Models/Response/FSUIPCResponse'
 import {FSUIPCRequest, FSUIPCRequest as Request} from './Models/Request/FSUIPCRequest'
 import {DynamicResponseHandler, ResponseHandler} from "./DynamicResponseHandler";
 import {IFSUIPC} from "./IFSUIPC";
+import {Commands} from "./Models/Request/Commands";
 
 export class FSUIPC implements IFSUIPC {
 	constructor() {}
@@ -13,6 +14,46 @@ export class FSUIPC implements IFSUIPC {
 
 	private handlers: Map<string, ResponseHandler<any>> = new Map()
 	private dynamicHandlers: Map<string, DynamicResponseHandler> = new Map()
+
+	private requests: number = 0;
+	private messages: number = 0;
+	private handlingFailures: number = 0;
+	private about: string = "";
+
+	public GetAddress(): ubl<string>
+	{
+		return this.ws?.url ?? undefined;
+	}
+
+	public GetHandlerCount(): number
+	{
+		return this.handlers.size;
+	}
+
+	public GetDynamicHandlerCount(): number
+	{
+		return this.dynamicHandlers.size;
+	}
+
+	public GetRequestsSent(): number
+	{
+		return this.requests;
+	}
+
+	public GetMessagesReceived(): number
+	{
+		return this.messages;
+	}
+
+	public GetHandlingFailures(): number
+	{
+		return this.handlingFailures;
+	}
+
+	public GetServerInfo(): string
+	{
+		return this.about;
+	}
 
 	IsConnected(): Boolean {
 		return this.connected;
@@ -39,6 +80,19 @@ export class FSUIPC implements IFSUIPC {
 				try
 				{
 					clearTimeout(timeoutId)
+					self.SendRequest(
+						new Request(Commands.AboutRead),
+						(r: Response) => {
+
+							if (r.success)
+							{
+								// @ts-ignore
+								const {data} = r;
+								self.about = JSON.stringify(data, null, 2)
+							}
+						}
+					);
+
 					_resolve(undefined);
 				} catch (e) {}
 			};
@@ -58,6 +112,7 @@ export class FSUIPC implements IFSUIPC {
 
 			this.ws.onmessage = function (msg: MessageEvent) {
 				Logging.LogWebResponse(msg.data)
+				self.messages++;
 
 				let fsuipcResponse: Response = JSON.parse(msg.data) as Response;
 
@@ -65,6 +120,7 @@ export class FSUIPC implements IFSUIPC {
 					self.HandleResponse(fsuipcResponse);
 				} catch (e) {
 					Logging.LogError("Failed handling FSUIPC response", e);
+					self.handlingFailures++;
 				}
 			}
 		});
@@ -189,6 +245,7 @@ export class FSUIPC implements IFSUIPC {
 		let json = JSON.stringify(request);
 		Logging.LogWebRequest(json)
 		this.ws?.send(json)
+		this.requests++;
 	}
 
 	private HandleResponse(fsuipcResponse: Response) {
