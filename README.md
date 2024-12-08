@@ -2,9 +2,14 @@
 
 FS.WebRemote is a part of our FS project.
 
-It's a TypeScript based web application designed to provide a web-based remote interface for flight simulation, similar to the [a32nx remote project](https://github.com/paulalexandrow/a32nx-webremote)
+It's a (getting started) TypeScript based web application designed to provide a web-based remote interface for flight simulation, similar to the [a32nx remote project](https://github.com/paulalexandrow/a32nx-webremote)
 
 We're mostly just doing this because we're bored lol.
+
+## Current status:
+Back-end for talking to the sim is looking great ✔
+
+Front-end is still in pre-development ⏰
 
 ## Features
 
