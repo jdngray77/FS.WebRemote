@@ -4,6 +4,7 @@ import {FSUIPCResponse as Response} from './Models/Response/FSUIPCResponse'
 import {FSUIPCRequest, FSUIPCRequest as Request} from './Models/Request/FSUIPCRequest'
 import {DynamicResponseHandler, ResponseHandler} from "./DynamicResponseHandler";
 import {IFSUIPC} from "./IFSUIPC";
+import {Commands} from "./Models/Request/Commands";
 
 export class FSUIPC implements IFSUIPC {
 	constructor() {}

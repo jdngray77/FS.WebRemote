@@ -9,6 +9,9 @@ export class Updatable<T>
 
 	Update(update: T)
 	{
-
+		for (let updateListener of this.updateListeners)
+		{
+			updateListener(update);
+		}
 	}
 }
