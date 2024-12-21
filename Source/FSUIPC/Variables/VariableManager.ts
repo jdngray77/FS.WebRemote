@@ -41,7 +41,7 @@ export class VariableManager extends Updatable<FSUIPCVarsResponse> implements ID
     private responseHandler: VariableManagerDynamicResponseHandler;
 
     constructor
-    (   
+    (
         private ws: IFSUIPC
     )
     {
@@ -92,11 +92,18 @@ export class VariableManager extends Updatable<FSUIPCVarsResponse> implements ID
         super.Update(update);
     }
 
+    /**
+     * Returns a copy of the groups currently managed by this manager.
+     */
     public GetVariableGroups(): VariableGroup[] 
     {
         return [...this.variableGroups];
     }
 
+    /**
+     * Returns a known variable group by name, or undefined if name does not
+     * match any known group.
+     */
     public GetGroup(name: string): ubl<VariableGroup>
     {
         return this.variableGroups.find(it => it.name == name)
