@@ -16,6 +16,7 @@ export class VariableGroup extends Updatable<FSUIPCVarsResponse>
             return;
         }
 
+        Logging.LogTrace(`Updating group '${this.name}'`);
 
         Object.entries(update.data).forEach(([key, value]) => {
             let variableToUpdate = this.variables.find(it => it.Name == key);
