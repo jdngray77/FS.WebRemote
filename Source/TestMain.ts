@@ -8,6 +8,7 @@ import { SimVariable } from "./FSUIPC/Variables/SimVariable";
 import { VariableGroup } from "./FSUIPC/Variables/VariableGroup";
 import {FSUIPCShim} from "./FSUIPC/FSUIPCShim";
 import {IFSUIPC} from "./FSUIPC/IFSUIPC";
+import {DiagnosticReport} from "./FSUIPC/DiagnosticReport";
 
 
 
@@ -24,14 +25,6 @@ async function main(): Promise<void> {
     Logging.LogError("oops, couldn't connect!")
     return;
   }
-
-  // Read & print server info
-  fsuipc.SendRequest(
-    new Request(Commands.AboutRead),
-    (r: Response) => {
-        // console.log(r)
-    }
-  );
 
   // Create some variables! (haven't done offsets yet)
   let variableManger = new VariableManager(fsuipc);
@@ -51,10 +44,18 @@ async function main(): Promise<void> {
   // listen to particular group updates
   elecPanel.OnUpdate(it =>
   {
-    variableManger.StopVariableGroupPolling(elecPanel);
+
   })
 
   variableManger.StartVariableGroupPolling(elecPanel);
+
+  setTimeout(() => {
+    let diagnosticReport = new DiagnosticReport();
+    diagnosticReport.AddClient(<FSUIPC>fsuipc);
+    diagnosticReport.AddManager(variableManger);
+
+    console.log(diagnosticReport.CreateReport());
+  }, 5000);
 
   // // Variable group : Option 2 - DIY
   // let hydPanel: VariableGroup = new VariableGroup(
@@ -67,7 +68,7 @@ async function main(): Promise<void> {
 
   //variableManger.AddVariableGroup(hydPanel);
 
-  // dispose of when no longer needed. 
+  // dispose of when no longer needed.
   // stops listening for variable updates + unregisters all variables.
   //variableManger.Dispose();
 }

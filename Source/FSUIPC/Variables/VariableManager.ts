@@ -41,7 +41,7 @@ export class VariableManager extends Updatable<FSUIPCVarsResponse> implements ID
     private responseHandler: VariableManagerDynamicResponseHandler;
 
     constructor
-    (   
+    (
         private ws: IFSUIPC
     )
     {

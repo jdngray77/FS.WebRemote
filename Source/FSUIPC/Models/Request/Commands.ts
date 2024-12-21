@@ -12,7 +12,6 @@ export class Commands
     public static readonly VarsReload: string = "vars.reload";
     public static readonly VarsWrite: string = "vars.write";
 
-
     public static readonly OffsetsDeclare: string = "offsets.declare";
     public static readonly OffsetsRead: string = "offsets.read";
     public static readonly OffsetsRemove: string = "offsets.remove";
